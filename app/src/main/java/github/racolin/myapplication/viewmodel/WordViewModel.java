@@ -5,20 +5,26 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.scopes.ActivityScoped;
 import github.racolin.myapplication.entity.Word;
 import github.racolin.myapplication.repository.WordRepository;
 
-public class WordViewModel extends AndroidViewModel {
+@ActivityScoped
+public class WordViewModel extends ViewModel {
 
     private WordRepository mWordRepository;
     private final LiveData<List<Word>> mAllWords;
 
-    public WordViewModel(@NonNull Application application) {
-        super(application);
-        mWordRepository = new WordRepository(getApplication());
+    @Inject
+    public WordViewModel(WordRepository wordRepository) {
+        mWordRepository = wordRepository;
         mAllWords = mWordRepository.getAllWords();
     }
 

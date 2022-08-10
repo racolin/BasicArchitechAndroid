@@ -1,5 +1,10 @@
 package github.racolin.myapplication;
 
+import static android.content.Intent.ACTION_VIEW;
+import static android.content.Intent.CATEGORY_BROWSABLE;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.content.Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -15,21 +20,34 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Entity;
 import androidx.room.Room;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import github.racolin.myapplication.adapter.WordAdapter;
 import github.racolin.myapplication.databinding.ActivityMainBinding;
 import github.racolin.myapplication.entity.Word;
+import github.racolin.myapplication.repository.WordRepository;
 import github.racolin.myapplication.viewmodel.WordViewModel;
 
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
-
-    private WordViewModel viewModel;
+    @Inject
+    WordViewModel viewModel;
     private ActivityMainBinding binding;
     private WordAdapter adapter;
+    @Inject
+    WordRepository r1;
+    @Inject
+    WordRepository r2;
 
     private ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -38,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         String word = result.getData().getStringExtra("word");
-                        viewModel.insert(new Word(word));
+//                        viewModel.insert(new Word(word));
                     }
                 }
             }
@@ -49,11 +67,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        viewModel = new ViewModelProvider(this, ViewModelProvider
-                    .AndroidViewModelFactory
-                    .getInstance(getApplication()))
-                .get(WordViewModel.class);
+        Log.d("debug", r1.toString());
+        Log.d("debug", r2.toString());
 
         viewModel.getAllWords().observe(this, new Observer<List<Word>>() {
             @Override
@@ -71,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initListener() {
         binding.fab.setOnClickListener((view -> {
-            launcher.launch(new Intent(MainActivity.this, NewWordActivity.class));
+          Intent intent = new Intent(this, NewWordActivity.class);
+          launcher.launch(intent);
         }));
     }
 }

@@ -1,22 +1,24 @@
 package github.racolin.myapplication.repository;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.scopes.ActivityScoped;
 import github.racolin.myapplication.dao.WordDao;
 import github.racolin.myapplication.database.WordRoomDatabase;
 import github.racolin.myapplication.entity.Word;
-
+@ActivityScoped
 public class WordRepository {
     private WordDao mWordDao;
     private LiveData<List<Word>> mAllWords;
 
-    public WordRepository(Application application) {
-        WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
-        mWordDao = db.wordDao();
+    @Inject
+    public WordRepository(WordRoomDatabase wordRoomDatabase) {
+        mWordDao = wordRoomDatabase.wordDao();
         mAllWords = mWordDao.getAlphabetizedWords();
     }
 

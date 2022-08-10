@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
-import github.racolin.myapplication.database.WordRoomDatabase;
 
 @Entity(tableName = "word_table")
 public class Word {
